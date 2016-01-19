@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Net.Http;
+using System.Threading.Tasks;
 
 using Microsoft.AspNet.Mvc;
 
@@ -18,21 +19,21 @@ namespace XUnitMoqSampleWeb.Controllers
 
         #region DI Constructor
 
-        private readonly IGitHubApiService _service;
+        //private readonly IGitHubApiService _service;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HomeController"/> class.
-        /// </summary>
-        /// <param name="service"><see cref="IGitHubApiService"/> instance.</param>
-        public HomeController(IGitHubApiService service)
-        {
-            if (service == null)
-            {
-                throw new ArgumentNullException(nameof(service));
-            }
+        ///// <summary>
+        ///// Initializes a new instance of the <see cref="HomeController"/> class.
+        ///// </summary>
+        ///// <param name="service"><see cref="IGitHubApiService"/> instance.</param>
+        //public HomeController(IGitHubApiService service)
+        //{
+        //    if (service == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(service));
+        //    }
 
-            this._service = service;
-        }
+        //    this._service = service;
+        //}
 
         #endregion
 
@@ -45,20 +46,20 @@ namespace XUnitMoqSampleWeb.Controllers
 
             #region DI Service
 
-            var result = await this._service.GetOrgReposAsync("devkimchi").ConfigureAwait(false);
+            //var result = await this._service.GetOrgReposAsync("devkimchi").ConfigureAwait(false);
 
-            this.ViewBag.Repos = JArray.Parse(result);
+            //this.ViewBag.Repos = JArray.Parse(result);
 
             #endregion
 
-            //using (var client = new HttpClient())
-            //{
-            //    client.DefaultRequestHeaders.Add("User-Agent", "xUnitMoqSample");
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Add("User-Agent", "xUnitMoqSample");
 
-            //    var json = await client.GetStringAsync($"https://api.github.com/orgs/devkimchi/repos").ConfigureAwait(false);
+                var json = await client.GetStringAsync($"https://api.github.com/orgs/devkimchi/repos").ConfigureAwait(false);
 
-            //    this.ViewBag.Repos = JArray.Parse(json);
-            //}
+                this.ViewBag.Repos = JArray.Parse(json);
+            }
 
             return this.View();
         }

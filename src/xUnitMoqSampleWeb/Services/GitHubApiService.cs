@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace XUnitMoqSampleWeb.Services
@@ -17,6 +18,11 @@ namespace XUnitMoqSampleWeb.Services
         /// <returns>Returns the response string from GitHub API.</returns>
         public async Task<string> GetOrgReposAsync(string orgName)
         {
+            if (string.IsNullOrWhiteSpace(orgName))
+            {
+                throw new ArgumentNullException(nameof(orgName));
+            }
+
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Add("User-Agent", "xUnitMoqSample");

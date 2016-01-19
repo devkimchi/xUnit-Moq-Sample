@@ -31,25 +31,30 @@ namespace XUnitMoqSampleWeb.Tests
         /// <param name="fixture"><see cref="HomeControllerFixture"/> instance.</param>
         public HomeControllerTest(HomeControllerFixture fixture)
         {
+            #region service
             this._service = fixture.GitHubApiService;
+            #endregion
+
             this._controller = fixture.HomeController;
         }
 
-        /// <summary>
-        /// Tests whether the constructor shoult throw an exception or not.
-        /// </summary>
-        [Fact]
-        public void Given_NullParameter_Constructor_ShouldThrow_ArgumentNullException()
-        {
-            // Arrange
-            IGitHubApiService service = null;
+        #region controller
+        ///// <summary>
+        ///// Tests whether the constructor shoult throw an exception or not.
+        ///// </summary>
+        //[Fact]
+        //public void Given_NullParameter_Constructor_ShouldThrow_ArgumentNullException()
+        //{
+        //    // Arrange
+        //    IGitHubApiService service = null;
 
-            // Action
-            Action action = () => { var controller = new HomeController(service); };
+        //    // Action
+        //    Action action = () => { var controller = new HomeController(service); };
 
-            // Assert
-            action.ShouldThrow<ArgumentNullException>();
-        }
+        //    // Assert
+        //    action.ShouldThrow<ArgumentNullException>();
+        //}
+        #endregion
 
         /// <summary>
         /// Tests whether Index should return result or not.
@@ -60,18 +65,25 @@ namespace XUnitMoqSampleWeb.Tests
         public async void Given_Index_ShouldReturn_Result(string repo)
         {
             // Arrange
-            var json = $"[{{\"name\": \"{repo}\"}}]";
+            #region service
+            //var json = $"[{{\"name\": \"{repo}\"}}]";
 
-            this._service.Setup(p => p.GetOrgReposAsync(It.IsAny<string>())).Returns(Task.FromResult(json));
+            //this._service.Setup(p => p.GetOrgReposAsync(It.IsAny<string>())).Returns(Task.FromResult(json));
+            #endregion
 
             // Action
             var result = await this._controller.Index().ConfigureAwait(false) as ViewResult;
 
             // Assert
+            result.Should().NotBeNull();
+
             var jarray = this._controller.ViewBag.Repos as JArray;
             jarray.Should().NotBeNullOrEmpty();
-            jarray.Count.Should().Be(1);
-            jarray[0]["name"].Value<string>().Should().BeEquivalentTo(repo);
+
+            #region service
+            //jarray.Count.Should().Be(1);
+            //jarray[0]["name"].Value<string>().Should().BeEquivalentTo(repo);
+            #endregion
         }
     }
 }

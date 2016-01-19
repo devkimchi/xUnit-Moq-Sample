@@ -19,14 +19,23 @@ namespace XUnitMoqSampleWeb.Tests.Fixtures
         /// </summary>
         public HomeControllerFixture()
         {
-            this.GitHubApiService = new Mock<IGitHubApiService>();
-            this.HomeController = new HomeController(this.GitHubApiService.Object);
+            #region service
+
+            //this.GitHubApiService = new Mock<IGitHubApiService>();
+
+            //this.HomeController = new HomeController(this.GitHubApiService.Object);
+
+            #endregion
+
+            this.HomeController = new HomeController();
         }
 
+        #region service
         /// <summary>
         /// Gets the <see cref="Mock{IGitHubApiService}"/> instance.
         /// </summary>
         public Mock<IGitHubApiService> GitHubApiService { get; }
+        #endregion
 
         /// <summary>
         /// Gets the <see cref="HomeController"/> instance.
