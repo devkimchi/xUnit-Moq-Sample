@@ -2,6 +2,8 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 
+using XUnitMoqSampleWeb.Helpers;
+
 namespace XUnitMoqSampleWeb.Services
 {
     /// <summary>
@@ -9,7 +11,24 @@ namespace XUnitMoqSampleWeb.Services
     /// </summary>
     public class GitHubApiService : IGitHubApiService
     {
+        private readonly IHttpClientHelper _helper;
+
         private bool _disposed;
+
+        /// <summary>
+        /// Creates the <see cref="HttpClient"/> instance.
+        /// </summary>
+        /// <param name="helper"><see cref="helper"/> instance.</param>
+        /// <returns>Returns the <see cref="HttpClient"/> instance created.</returns>
+        public GitHubApiService(IHttpClientHelper helper)
+        {
+            if (helper == null)
+            {
+                throw new ArgumentNullException(nameof(helper));
+            }
+
+            this._helper = helper;
+        }
 
         /// <summary>
         /// Gets the list of repositories belong to the ogranisation.
@@ -23,7 +42,7 @@ namespace XUnitMoqSampleWeb.Services
                 throw new ArgumentNullException(nameof(orgName));
             }
 
-            using (var client = new HttpClient())
+            using (var client = this._helper.CreateInstance())
             {
                 client.DefaultRequestHeaders.Add("User-Agent", "xUnitMoqSample");
 

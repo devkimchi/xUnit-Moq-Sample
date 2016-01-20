@@ -1,5 +1,8 @@
 ﻿using System;
 
+using Moq;
+
+using XUnitMoqSampleWeb.Helpers;
 using XUnitMoqSampleWeb.Services;
 
 namespace XUnitMoqSampleWeb.Tests.Fixtures
@@ -16,8 +19,15 @@ namespace XUnitMoqSampleWeb.Tests.Fixtures
         /// </summary>
         public GitHubApiServiceFixture()
         {
-            this.GitHubApiService = new GitHubApiService();
+            this.HttpClientHelper = new Mock<IHttpClientHelper>();
+
+            this.GitHubApiService = new GitHubApiService(this.HttpClientHelper.Object);
         }
+
+        /// <summary>
+        /// Gets the <see cref="Mock{IHttpClientHelper}"/> instance.
+        /// </summary>
+        public Mock<IHttpClientHelper> HttpClientHelper { get; }
 
         /// <summary>
         /// Gets the <see cref="IGitHubApiService"/> instance.

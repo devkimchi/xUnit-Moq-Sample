@@ -1,11 +1,16 @@
 ﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 using FluentAssertions;
 
+using Moq;
+
 using Xunit;
 
+using XUnitMoqSampleWeb.Helpers;
 using XUnitMoqSampleWeb.Services;
+using XUnitMoqSampleWeb.Tests.Fakes;
 using XUnitMoqSampleWeb.Tests.Fixtures;
 
 namespace XUnitMoqSampleWeb.Tests
@@ -15,6 +20,7 @@ namespace XUnitMoqSampleWeb.Tests
     /// </summary>
     public class GitHubApiServiceTest : IClassFixture<GitHubApiServiceFixture>
     {
+        private readonly Mock<IHttpClientHelper> _helper;
         private readonly IGitHubApiService _service;
 
         /// <summary>
@@ -23,6 +29,7 @@ namespace XUnitMoqSampleWeb.Tests
         /// <param name="fixture"><see cref="GitHubApiServiceFixture"/> instance.</param>
         public GitHubApiServiceTest(GitHubApiServiceFixture fixture)
         {
+            this._helper = fixture.HttpClientHelper;
             this._service = fixture.GitHubApiService;
         }
 
@@ -51,19 +58,20 @@ namespace XUnitMoqSampleWeb.Tests
         public async void GIven_OrgName_GetOrgReposAsync_ShouldReturn_Result(string orgName)
         {
             // Arrange
+            var json = $"[{{\"name\": \"{orgName}\"}}]";
+            var message = new HttpResponseMessage { Content = new StringContent(json) };
+
+            var handler = new HttpResponseHandlerFake(message);
+            var client = new HttpClient(handler) { BaseAddress = new Uri("http://localhost:34015") };
+
+            this._helper.Setup(p => p.CreateInstance(It.IsAny<HttpMessageHandler>())).Returns(client);
 
             // Act
             var result = await this._service.GetOrgReposAsync(orgName).ConfigureAwait(false);
 
             // Assert
             result.Should().NotBeNullOrWhiteSpace();
+            result.Should().ContainEquivalentOf($"\"{orgName}\"");
         }
-
-        #region something
-        //var message = new HttpResponseMessage { Content = new StringContent(html) };
-
-        //var handler = new HttpResponseHandlerFake(message);
-        //var client = new HttpClient(handler) { BaseAddress = new Uri("http://localhost:5080") };
-        #endregion
     }
 }

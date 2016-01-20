@@ -1,5 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 using Microsoft.AspNet.Mvc;
 
@@ -16,26 +15,21 @@ namespace XUnitMoqSampleWeb.Controllers
     /// </summary>
     public class HomeController : Controller
     {
+        private readonly IGitHubApiService _service;
 
-        #region DI Constructor
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HomeController"/> class.
+        /// </summary>
+        /// <param name="service"><see cref="IGitHubApiService"/> instance.</param>
+        public HomeController(IGitHubApiService service)
+        {
+            if (service == null)
+            {
+                throw new ArgumentNullException(nameof(service));
+            }
 
-        //private readonly IGitHubApiService _service;
-
-        ///// <summary>
-        ///// Initializes a new instance of the <see cref="HomeController"/> class.
-        ///// </summary>
-        ///// <param name="service"><see cref="IGitHubApiService"/> instance.</param>
-        //public HomeController(IGitHubApiService service)
-        //{
-        //    if (service == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(service));
-        //    }
-
-        //    this._service = service;
-        //}
-
-        #endregion
+            this._service = service;
+        }
 
         /// <summary>
         /// Gets the <see cref="IActionResult"/> for /home/index.
@@ -43,23 +37,9 @@ namespace XUnitMoqSampleWeb.Controllers
         /// <returns>Returns the <see cref="IActionResult"/>.</returns>
         public async Task<IActionResult> Index()
         {
+            var result = await this._service.GetOrgReposAsync("devkimchi").ConfigureAwait(false);
 
-            #region DI Service
-
-            //var result = await this._service.GetOrgReposAsync("devkimchi").ConfigureAwait(false);
-
-            //this.ViewBag.Repos = JArray.Parse(result);
-
-            #endregion
-
-            using (var client = new HttpClient())
-            {
-                client.DefaultRequestHeaders.Add("User-Agent", "xUnitMoqSample");
-
-                var json = await client.GetStringAsync($"https://api.github.com/orgs/devkimchi/repos").ConfigureAwait(false);
-
-                this.ViewBag.Repos = JArray.Parse(json);
-            }
+            this.ViewBag.Repos = JArray.Parse(result);
 
             return this.View();
         }
