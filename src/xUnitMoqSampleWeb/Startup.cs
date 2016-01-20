@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
+using XUnitMoqSampleWeb.Helpers;
 using XUnitMoqSampleWeb.Services;
 
 namespace XUnitMoqSampleWeb
@@ -27,6 +28,7 @@ namespace XUnitMoqSampleWeb
             // Add framework services.
             services.AddMvc();
 
+            services.AddTransient<IHttpClientHelper, HttpClientHelper>();
             services.AddTransient<IGitHubApiService, GitHubApiService>();
         }
 
